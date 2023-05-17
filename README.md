@@ -1,29 +1,16 @@
-# Code
-import win32com.client as win32
-from pymsg import MSG
+months_below_95 = 0
+previous_user = None
 
-def send_email(subject, body, recipients, attachments=None):
-    outlook = win32.Dispatch('Outlook.Application')
-    mail = outlook.CreateItem(0)
-    mail.Subject = subject
-    mail.HTMLBody = body
-    mail.To = recipients
-    
-    if attachments:
-        for attachment in attachments:
-            mail.Attachments.Add(attachment)
-    
-    mail.Send()
-    print("E-mail został wysłany.")
+for row in tabela:
+    if row[0] != previous_user:
+        months_below_95 = 0  # Resetuj licznik przy zmianie użytkownika
+    if row[3] >= 95:
+        months_below_95 = 0  # Resetuj licznik, jeśli wynik jest 95% lub więcej
+    else:
+        months_below_95 += 1
+    row[4] = months_below_95
+    previous_user = row[0]
 
-# Przykładowe użycie
-subject = "Testowa wiadomość"
-template_path = "template.msg"  # Ścieżka do pliku z szablonem .msg
-recipients = "example@example.com"  # Adres odbiorcy
-
-# Wczytanie treści szablonu z pliku .msg
-msg = MSG(template_path)
-template_body = msg.body
-
-# Wywołanie funkcji send_email z treścią z szablonu
-send_email(subject, template_body, recipients)
+# Wyświetlenie zaktualizowanej tabeli
+for row in tabela:
+    print(row)
